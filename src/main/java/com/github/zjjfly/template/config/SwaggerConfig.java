@@ -1,4 +1,4 @@
-package com.siemens.template.config;
+package com.github.zjjfly.template.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

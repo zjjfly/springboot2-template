@@ -1,4 +1,4 @@
-package com.siemens.template;
+package com.github.zjjfly.template;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
