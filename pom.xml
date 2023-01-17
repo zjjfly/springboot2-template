@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+        <version>2.7.6</version>
     </parent>
 
     <groupId>com.siemens</groupId>
@@ -18,8 +18,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <clover.version>4.4.1</clover.version>
-        <spring.cloud-version>2021.0.4</spring.cloud-version>
+        <jacoco.version>0.8.8</jacoco.version>
+        <spring.cloud-version>2021.0.5</spring.cloud-version>
     </properties>
 
     <dependencies>
@@ -44,23 +44,38 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mockito-junit-jupiter</artifactId>
+                    <groupId>org.mockito</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>mockito-core</artifactId>
+                    <groupId>org.mockito</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>2.0.9</version>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-core</artifactId>
-            <version>2.0.9</version>
-            <scope>test</scope>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mockito-core</artifactId>
+                    <groupId>org.mockito</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>2.0.9</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>4.8.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -73,7 +88,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-core</artifactId>
-            <version>5.8.9</version>
+            <version>5.8.11</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -97,40 +112,54 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-instrument</id>
+                        <goals>
+                            <goal>instrument</goal>
+                        </goals>
+                        <!-- 下面这一行在官方的样例中没有，当需要在运行测试之前对测试代码做一些额外的编译或生成工作，
+                        则需要这一行，它可以保证这些工作完成之后再使用Jacoco对字节码进行instrument -->
+                        <!-- <phase>process-test-classes</phase> -->
+                    </execution>
+                    <execution>
+                        <id>default-restore-instrumented-classes</id>
+                        <goals>
+                            <goal>restore-instrumented-classes</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/coverage.exec</dataFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <properties>
-                        <property>
-                            <name>listener</name>
-                            <value>com.atlassian.clover.recorder.junit.JUnitTestRunnerInterceptor
-                            </value>
-                        </property>
-                    </properties>
+<!--                    如使用Java 11及以上的版本需要下面的这些参数 -->
+<!--                    <argLine>-->
+<!--                        &#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-opens java.base/java.lang.reflect=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-opens java.base/java.util=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-opens java.xml/jdk.xml.internal=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-opens java.base/java.time=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-opens java.base/java.time.format=ALL-UNNAMED-->
+<!--                    </argLine>-->
+                    <systemPropertyVariables>
+                        <jacoco-agent.destfile>${project.build.directory}/coverage.exec</jacoco-agent.destfile>
+                    </systemPropertyVariables>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.openclover</groupId>
-                <artifactId>clover-maven-plugin</artifactId>
-                <version>${clover.version}</version>
-                <executions>
-                    <execution>
-                        <id>main</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>instrument</goal>
-                            <goal>aggregate</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>site</id>
-                        <phase>pre-site</phase>
-                        <goals>
-                            <goal>instrument</goal>
-                            <goal>aggregate</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
