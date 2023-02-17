@@ -1,6 +1,6 @@
 spring:
   application:
     name: spring-template
-  mvc:
-    pathmatch:
-      matching-strategy: ANT_PATH_MATCHER
+springdoc:
+  packagesToScan: package1, package2
+  pathsToMatch: /**
