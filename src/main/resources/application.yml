@@ -2,5 +2,5 @@ spring:
   application:
     name: spring-template
 springdoc:
-  packagesToScan: package1, package2
+  packagesToScan: com.github.zjjfly
   pathsToMatch: /**
