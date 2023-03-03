@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.github.zjjfly</groupId>
-    <artifactId>springboot-template</artifactId>
+    <artifactId>springboot2-template</artifactId>
     <version>1.0</version>
 
     <properties>
